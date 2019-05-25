@@ -2,17 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LivingEntity : MonoBehaviour
+public class LivingEntity : MonoBehaviour, IDamageable
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public float startingHealth;
+    protected float health;
+    protected bool dead;
+    public event System.Action OnDeath;
+
+    protected virtual void Start()
     {
-        
+        health = startingHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeHit(float damage, RaycastHit hit)
     {
-        
+        health -= damage;
+
+        if (health <= 0 && !dead)
+        {
+            Die();
+        }
+    }
+
+    protected void Die()
+    {
+        dead = true;
+        if (OnDeath != null)
+        {
+            OnDeath();
+        }
+        GameObject.Destroy(gameObject);
     }
 }
